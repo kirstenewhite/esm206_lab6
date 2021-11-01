@@ -49,7 +49,8 @@ Warning: people get weirdl upset if you say "accept" the null.
 Now, let's compare this outcome to a rank-based test. 
 
 ### Mann Whitney U unpaired rank-based test
-Use this when medians are the appropriate measure to compare the data (standard deviation). 
+Use this when medians are the appropriate measure to compare the data (standard deviation).
+Learn more on this by typing ?wilcox.test into the console. See what outputs mean by scrolling all the way down to the values section that describes each. 
 
 ```{r}
 mwu <- wilcox.test(gp_1, gp_2)
@@ -61,3 +62,65 @@ What does this outcome actually mean (p-value of 0.28)?
 If these samples were drawn from populations with the same ranks (medians), the probability of finding 2  samples with ranks *at least as different* as those in our samples by random chance is 0.28 (28%). This probability is pretty likely to occur, so we do not have enough evidence to reject the null hypothesis; therfore, we will retain the null hypothesis (plausible these values were pulled from populations with the same ranks). 
 
 There is no significant difference in ranks between group 1 and group 2. Then, (provide statistical summary here).  
+
+
+
+Now, let's get into linear regression!
+
+## Linear Regression 
+Simple linear regression (single dependent variable, a single independent variable)
+
+Looking at penguins data, use penguin flipper length v penguin body mass
+
+```{r, include = FALSE}
+# Make an exploratory plot of penguin body mass (y axis) versus flipper length (x axis) 
+
+ggplot(data = penguins, aes(x = flipper_length_mm, y = body_mass_g))+
+  geom_point() +
+  geom_smooth(method = "lm")
+```
+
+Now, find a linear regression model using ordinary least squares describing the relationship between flipper length and body mass for these penguins. 
+
+3 pieces: 
+- What type of model? 
+- What is the relationship to model (DV - IV(s))? 
+- Where is the data that is used to create this model?
+
+```{r}
+penguin_lm <- lm(body_mass_g ~ flipper_length_mm, data = penguins)
+```
+What does this mean? missed this part of lecture bc my code wasnt working
+
+interpret coeff as expected avg change in...
+
+What is the actual interpretation of intercept (value of -5780.83)? -> if penguin with flipper length = 0 mm then a body mass of that penguin would be -5780.83
+
+If you just want the coeff associated with flipper length -> type penguin_lm$coefficients[2] in the console to pull it out 
+
+### Broom packages returns model outputs as tidy dataframes 
+Can use broom to access individual pieces - shows st error, statistic, p value 
+Lots of useful information included in here that you might want to use in your table 
+using broom::glance(dataframe) shows model wide 
+```{r}
+penguin_lm_tidy <- broom::tidy(penguin_lm) # Can also just use tidy()
+penguin_lm_tidy
+```
+
+How can I actually include my model equation in a report?
+
+```{r}
+extract_eq(model = penguin_lm, use_coefs = TRUE) # use_coefs replaces with the actual model coefs that were calculated
+```
+```{r}
+plot(penguin_lm)
+```
+Compares each of the observed values to what the model predicts it should be 
+1) Residual v fitted - how far - in this case, looks relatively even spread around that predictive line 
+3) scale - location - does it look like the residuals have equal variance across the predictive model?
+
+diagnostic looking at residuals distribution 
+2) normal QQ - explores normality, but here normality is referencing the value of the residuals (assumption is normality of the residuals)- in this case, residuals look very very normally distributed 
+
+measure of leverage of any point; measures outliers; what points seem to be most impacting the (only remove outliers if we think the data point is not actually representative of our population, NOT just because its different)
+4) residuals v leverage 
