@@ -1,0 +1,63 @@
+---
+title: "ESM 206 Lab 6"
+author: "Kirsten White"
+date: "11/1/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(palmerpenguins)
+library(broom)
+library(equatiomatic)
+
+```
+
+## Example of a rank-based test 
+Using our own samples using a pseudorandom generator (with set.seed(insert_number))
+Set.seed tells r to create vectors of random samples -- 
+We will be comparing rank across groups of samples instead of values.
+
+```{r}
+set.seed(1414)
+gp_1 <- sample.int(20, size = 15, replace = TRUE) # To create sample of integer values, inside parenthesis tell it range to select integers from (0-20),  and how many values in it (size = 15), then tell it to replace (can see same integer values more than once in your set; value gets replaced into the pool of integers to choose from after used once)
+
+set.seed(1424)
+gp_2 <- sample.int(30, size = 15, replace = TRUE)
+```
+
+### Let's compare these samples using histograms
+```{r}
+hist(gp_1)
+
+hist(gp_2)
+```
+### Try a t-test
+Use this when the mean is the appropriate measure of standard deviation. 
+
+```{r}
+t.test(gp_1, gp_2)
+```
+
+This p-value means: if these samples were drawn from populations with the same mean (the null hypothesis), the probability of taking 2 random samples with means *at least as different* as the sample means we found by random chance (accounting for spread and sample size) is 19.82%. 
+
+Given that this is pretty likely to occur, we will *retain the null hypothesis*. (Fail to reject the null hypothesis -> no significant difference between group 1 and group 2)
+
+Warning: people get weirdl upset if you say "accept" the null. 
+
+Now, let's compare this outcome to a rank-based test. 
+
+### Mann Whitney U unpaired rank-based test
+Use this when medians are the appropriate measure to compare the data (standard deviation). 
+
+```{r}
+mwu <- wilcox.test(gp_1, gp_2)
+
+mwu
+```
+What does this outcome actually mean (p-value of 0.28)? 
+
+If these samples were drawn from populations with the same ranks (medians), the probability of finding 2  samples with ranks *at least as different* as those in our samples by random chance is 0.28 (28%). This probability is pretty likely to occur, so we do not have enough evidence to reject the null hypothesis; therfore, we will retain the null hypothesis (plausible these values were pulled from populations with the same ranks). 
+
+There is no significant difference in ranks between group 1 and group 2. Then, (provide statistical summary here).  
